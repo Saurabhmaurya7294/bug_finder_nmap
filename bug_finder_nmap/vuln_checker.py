@@ -1,32 +1,37 @@
-import subprocess
-import platform
+# bug_finder_nmap/vuln_checker.py
 
-def run_exploit(msf_module, target_ip, payload=None):
+# Simulated vulnerability database
+KNOWN_VULNERABILITIES = {
+    21: "FTP service - Check for anonymous login",
+    22: "SSH service - Check for weak credentials",
+    80: "HTTP service - Possible outdated web server",
+    443: "HTTPS service - Check SSL certificate issues",
+    3306: "MySQL database - Check for weak root password",
+    3389: "RDP service - Check for BlueKeep vulnerability"
+}
+
+def check_vulnerabilities(ip, ports):
     """
-    Launches a Metasploit exploit module against the target IP.
-
-    Args:
-        msf_module (str): Metasploit module path (e.g., exploit/windows/smb/ms17_010_eternalblue)
-        target_ip (str): Target IP address
-        payload (str, optional): Metasploit payload 
-                                 (e.g., windows/x64/meterpreter/reverse_tcp)
+    Checks the given IP and list of open ports against a known vulnerability list.
+    :param ip: Target IP address
+    :param ports: List of open port numbers
+    :return: List of found vulnerabilities
     """
-    # Build msfconsole command
-    msf_command = f"use {msf_module}; set RHOSTS {target_ip};"
-    if payload:
-        msf_command += f" set PAYLOAD {payload};"
-    msf_command += " run; exit"
+    print(f"[+] Checking vulnerabilities for {ip}...")
+    found = []
 
-    # Determine msfconsole executable based on OS
-    msf_path = "msfconsole.bat" if platform.system().lower().startswith("win") else "msfconsole"
+    for port in ports:
+        if port in KNOWN_VULNERABILITIES:
+            found.append({
+                "port": port,
+                "issue": KNOWN_VULNERABILITIES[port]
+            })
 
-    print(f"[*] Launching exploit '{msf_module}' on {target_ip}...")
-    try:
-        subprocess.run(
-            [msf_path, "-q", "-x", msf_command],
-            check=True
-        )
-    except subprocess.CalledProcessError as e:
-        print(f"[!] Exploit failed with error code {e.returncode}: {e}")
-    except FileNotFoundError:
-        print("[!] Metasploit not found. Please install it and add it to your PATH.")
+    if found:
+        print("[!] Vulnerabilities found:")
+        for vuln in found:
+            print(f" - Port {vuln['port']}: {vuln['issue']}")
+    else:
+        print("[+] No known vulnerabilities found.")
+
+    return found
