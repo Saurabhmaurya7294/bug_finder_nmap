@@ -1,7 +1,7 @@
 from .scanner import scan_ports
 from .vuln_checker import check_vulnerabilities
 
-from utils import print_banner
+from .utils import print_banner
 
 def main():
     print_banner()
