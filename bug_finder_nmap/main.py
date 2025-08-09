@@ -1,35 +1,22 @@
-import pyautogui
-import time
-from fpdf import FPDF
-from PIL import Image
+from scanner import scan_ports
+from vuln_checker import check_vulnerabilities
+from utils import print_banner
 
-# --- SETTINGS ---
-total_pages = 50            # Number of pages you want to convert
-delay_between_pages = 3     # Seconds to wait before flipping
-pdf_output = "ceh_book.pdf"
-
-# --- INIT ---
-pdf = FPDF()
-
-print("⏳ Starting in 5 seconds...")
-time.sleep(5)
-
-for i in range(total_pages):
-    print(f"📸 Capturing page {i+1}/{total_pages}")
+def main():
+    print_banner()
+    target = input("Enter target IP or domain: ").strip()
     
-    # Take screenshot
-    screenshot = pyautogui.screenshot()
-    img_path = f"page_{i+1}.png"
-    screenshot.save(img_path)
+    print("[*] Scanning target...")
+    services = scan_ports(target)
 
-    # Add to PDF
-    pdf.add_page()
-    pdf.image(img_path, 0, 0, 210, 297)  # A4 size in mm
+    print("\n[*] Checking vulnerabilities...")
+    for svc in services:
+        if svc["version"]:
+            vulns = check_vulnerabilities(svc["service"], svc["version"])
+            if vulns:
+                print(f"[!] {svc['service']} {svc['version']} on port {svc['port']} has CVEs: {vulns}")
+        else:
+            print(f"[-] No version info for port {svc['port']}")
 
-    # Flip to next page
-    pyautogui.press('right')
-    time.sleep(delay_between_pages)
-
-# Save PDF
-pdf.output(pdf_output)
-print(f"✅ PDF saved as: {pdf_output}")
+if __name__ == "__main__":
+    main()
