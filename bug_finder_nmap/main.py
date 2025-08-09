@@ -1,5 +1,6 @@
-from scanner import scan_ports
-from vuln_checker import check_vulnerabilities
+from bug_finder_nmap.scanner import scan_ports
+from bug_finder_nmap.vuln_checker import check_vulnerabilities
+
 from utils import print_banner
 
 def main():
