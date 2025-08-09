@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # bug_finder_nmap/vuln_checker.py
 
 # Simulated vulnerability database
@@ -13,7 +12,7 @@ KNOWN_VULNERABILITIES = {
 
 def check_vulnerabilities(ip, ports):
     """
-    Checks the given IP and list of open ports against a known vulnerability list.
+    Checks the given IP and list of open ports against a known vulnerability database.
     :param ip: Target IP address
     :param ports: List of open port numbers
     :return: List of found vulnerabilities
@@ -28,12 +27,4 @@ def check_vulnerabilities(ip, ports):
                 "issue": KNOWN_VULNERABILITIES[port]
             })
 
-    if found:
-        print("[!] Vulnerabilities found:")
-        for vuln in found:
-            print(f" - Port {vuln['port']}: {vuln['issue']}")
-    else:
-        print("[+] No known vulnerabilities found.")
-
     return found
-=======
